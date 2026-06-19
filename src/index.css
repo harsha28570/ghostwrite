@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    @apply font-sans text-text-primary antialiased;
+    background: #0A0A0A;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight;
+  }
+
+  ::selection {
+    background: rgba(168, 85, 247, 0.3);
+    color: #FFFFFF;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-btn font-medium text-white bg-primary border border-primary transition-all duration-300;
+  }
+
+  .btn-primary:hover {
+    @apply bg-primary-dark border-primary-dark shadow-glow-sm;
+    transform: scale(1.02);
+  }
+
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-btn font-medium text-text-primary bg-transparent border border-border transition-all duration-300;
+  }
+
+  .btn-secondary:hover {
+    @apply border-border-hover text-white;
+    transform: scale(1.02);
+  }
+
+  .btn-secondary:active {
+    transform: scale(0.98);
+  }
+
+  .section-label {
+    @apply text-label font-medium uppercase text-primary tracking-widest;
+  }
+
+  .dark-card {
+    @apply bg-background-card border border-border rounded-card transition-all duration-300;
+  }
+
+  .dark-card:hover {
+    @apply border-border-hover;
+    transform: scale(1.02);
+  }
+
+  .nav-link {
+    @apply text-body-sm font-medium text-text-secondary transition-colors duration-300 hover:text-white;
+  }
+
+  .section-padding {
+    @apply py-28 px-4 sm:px-6 lg:px-8;
+  }
+
+  .glow-orb {
+    @apply absolute rounded-full blur-3xl bg-purple-500/10 pointer-events-none;
+  }
+
+  .input-dark {
+    @apply w-full px-4 py-3 rounded-input bg-background-surface border border-border text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all duration-300;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0A0A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27272A;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A855F7;
+}
