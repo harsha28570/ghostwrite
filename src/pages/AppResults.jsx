@@ -1,357 +1,475 @@
-import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { Zap, Check, Copy, Pencil, RefreshCw, Download, Share, Plus, Twitter, Linkedin, Instagram, Mail, Facebook, Music2, Youtube, Pin, MessageSquare, FileText, AlertCircle } from 'lucide-react'
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Ghost,
+  Check,
+  Copy,
+  Pencil,
+  RefreshCw,
+  Download,
+  Plus,
+  Twitter,
+  Linkedin,
+  Instagram,
+  Mail,
+  Facebook,
+  Music2,
+  Youtube,
+  Pin,
+  MessageSquare,
+  FileText,
+  AlertCircle,
+  ChevronRight,
+  Sparkles,
+} from "lucide-react";
 
 const platformsConfig = [
-  { id: 'twitter', name: 'Twitter Thread', icon: Twitter, format: 'Thread — 5-7 Tweets' },
-  { id: 'linkedin', name: 'LinkedIn Post', icon: Linkedin, format: 'Professional Post' },
-  { id: 'instagram', name: 'Instagram Caption', icon: Instagram, format: 'Caption + Hashtags' },
-  { id: 'email', name: 'Email Newsletter', icon: Mail, format: 'Newsletter' },
-  { id: 'facebook', name: 'Facebook Post', icon: Facebook, format: 'Conversational Post' },
-  { id: 'tiktok', name: 'TikTok Script', icon: Music2, format: 'Video Script' },
-  { id: 'youtube', name: 'YouTube Description', icon: Youtube, format: 'SEO Description' },
-  { id: 'pinterest', name: 'Pinterest Pin', icon: Pin, format: 'Pin Description' },
-  { id: 'reddit', name: 'Reddit Post', icon: MessageSquare, format: 'Community Post' },
-  { id: 'blog', name: 'Blog Summary', icon: FileText, format: 'Summary + Key Points' },
-]
+  { id: "twitter", name: "Twitter Thread", icon: Twitter, format: "Thread" },
+  {
+    id: "linkedin",
+    name: "LinkedIn Post",
+    icon: Linkedin,
+    format: "Professional",
+  },
+  {
+    id: "instagram",
+    name: "Instagram Caption",
+    icon: Instagram,
+    format: "Caption",
+  },
+  { id: "email", name: "Email Newsletter", icon: Mail, format: "Newsletter" },
+  { id: "facebook", name: "Facebook Post", icon: Facebook, format: "Post" },
+  { id: "tiktok", name: "TikTok Script", icon: Music2, format: "Script" },
+  {
+    id: "youtube",
+    name: "YouTube Description",
+    icon: Youtube,
+    format: "Description",
+  },
+  { id: "pinterest", name: "Pinterest Pin", icon: Pin, format: "Pin" },
+  { id: "reddit", name: "Reddit Post", icon: MessageSquare, format: "Post" },
+  { id: "blog", name: "Blog Summary", icon: FileText, format: "Summary" },
+];
 
 const tips = {
-  twitter: 'Post threads between 8-10am for best engagement.',
-  linkedin: 'LinkedIn posts perform best Tuesday-Thursday, 8-10am.',
-  instagram: 'Use 3-5 hashtags in your niche for maximum reach.',
-  email: 'Send newsletters Tuesday-Thursday for higher open rates.',
-  facebook: 'Posts with questions get 2x more comments.',
-  tiktok: 'Hook viewers in the first 3 seconds for retention.',
-  youtube: 'Include keywords in the first 2 lines for SEO.',
-  pinterest: 'Pin descriptions with keywords improve searchability.',
-  reddit: 'Avoid salesy language — lead with value.',
-  blog: 'Use the summary for meta descriptions and previews.',
-}
+  twitter: "Post between 8-10am for best engagement",
+  linkedin: "Publish Tuesday-Thursday, 8-10am",
+  instagram: "Use 3-5 relevant hashtags",
+  email: "Send Tuesday-Thursday for higher open rates",
+  facebook: "Questions drive 2x more comments",
+  tiktok: "Hook viewers in first 3 seconds",
+  youtube: "Keywords in first 2 lines boost SEO",
+  pinterest: "Include keywords in descriptions",
+  reddit: "Lead with value, not sales",
+  blog: "Use as meta description or preview",
+};
 
 function AppResults() {
-  const navigate = useNavigate()
-  const [activePlatform, setActivePlatform] = useState('twitter')
-  const [copied, setCopied] = useState(null)
-  const [editing, setEditing] = useState(null)
-  const [outputs, setOutputs] = useState({})
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [activePlatform, setActivePlatform] = useState("twitter");
+  const [copied, setCopied] = useState(null);
+  const [editing, setEditing] = useState(null);
+  const [outputs, setOutputs] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [copiedAll, setCopiedAll] = useState(false);
 
-  // Load results from localStorage on mount
   useEffect(() => {
     try {
-      const resultsString = localStorage.getItem('ghostwrite_results')
-      
+      const resultsString = localStorage.getItem("ghostwrite_results");
       if (!resultsString) {
-        setError('No results found. Please generate content first.')
-        setLoading(false)
-        return
+        setError("No results found. Please generate content first.");
+        setLoading(false);
+        return;
       }
-
-      const results = JSON.parse(resultsString)
-      
-      // Map AI results to outputs format
-      const mappedOutputs = {}
+      const results = JSON.parse(resultsString);
+      const mappedOutputs = {};
       Object.keys(results).forEach((key) => {
         if (results[key] && results[key].content) {
-          mappedOutputs[key] = results[key].content
+          mappedOutputs[key] = results[key].content;
         }
-      })
-
-      setOutputs(mappedOutputs)
-      setLoading(false)
+      });
+      setOutputs(mappedOutputs);
+      setLoading(false);
     } catch (err) {
-      console.error('Error loading results:', err)
-      setError('Failed to load results. Please try generating again.')
-      setLoading(false)
+      setError("Failed to load results. Please try generating again.");
+      setLoading(false);
     }
-  }, [])
-
-  // Calculate quality score based on content length and structure
-  const calculateScore = (content) => {
-    if (!content) return 0
-    const length = content.length
-    const lines = content.split('\n').length
-    const baseScore = 85
-    const lengthBonus = Math.min(10, length / 100)
-    const structureBonus = Math.min(5, lines / 5)
-    return Math.round(baseScore + lengthBonus + structureBonus)
-  }
+  }, []);
 
   const handleCopy = (id) => {
     if (outputs[id]) {
-      navigator.clipboard.writeText(outputs[id])
-      setCopied(id)
-      setTimeout(() => setCopied(null), 2000)
+      navigator.clipboard.writeText(outputs[id]);
+      setCopied(id);
+      setTimeout(() => setCopied(null), 2000);
     }
-  }
+  };
 
   const handleCopyAll = () => {
     const allText = Object.entries(outputs)
       .map(([id, content]) => {
-        const platform = platformsConfig.find(p => p.id === id)
-        return `=== ${platform?.name || id} ===\n${content}\n\n`
+        const platform = platformsConfig.find((p) => p.id === id);
+        return `── ${platform?.name || id} ──\n\n${content}\n\n`;
       })
-      .join('')
-    
-    navigator.clipboard.writeText(allText)
-    alert('All outputs copied to clipboard!')
-  }
-
-  const handleRegenerate = async (id) => {
-    // For now, just show alert. Can be implemented later
-    alert('Regenerate feature coming soon! For now, generate new content.')
-  }
+      .join("");
+    navigator.clipboard.writeText(allText);
+    setCopiedAll(true);
+    setTimeout(() => setCopiedAll(false), 2000);
+  };
 
   const handleSaveEdit = () => {
-    // Save edited content to localStorage
-    const resultsString = localStorage.getItem('ghostwrite_results')
+    const resultsString = localStorage.getItem("ghostwrite_results");
     if (resultsString) {
-      const results = JSON.parse(resultsString)
+      const results = JSON.parse(resultsString);
       if (results[editing]) {
-        results[editing].content = outputs[editing]
-        localStorage.setItem('ghostwrite_results', JSON.stringify(results))
+        results[editing].content = outputs[editing];
+        localStorage.setItem("ghostwrite_results", JSON.stringify(results));
       }
     }
-    setEditing(null)
-  }
+    setEditing(null);
+  };
 
-  // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#1A1A1A] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-text-secondary">Loading your results...</p>
+          <div className="w-6 h-6 border-2 border-[#F5F1E8]/20 border-t-[#F5F1E8]/80 rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-[13px] text-[#F5F1E8]/50">Loading results...</p>
         </div>
       </div>
-    )
+    );
   }
 
-  // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
-        <header className="bg-background-card border-b border-border">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div className="min-h-screen bg-[#1A1A1A] flex flex-col">
+        <header
+          className="border-b"
+          style={{
+            background: "#242424",
+            borderColor: "rgba(245, 241, 232, 0.06)",
+          }}
+        >
+          <div className="max-w-7xl mx-auto px-6 h-14 flex items-center">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <Zap className="w-4 h-4 text-white" />
+              <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[#DC2626] to-[#B91C1C] flex items-center justify-center">
+                <Ghost className="w-4 h-4 text-[#F5F1E8]" strokeWidth={2.5} />
               </div>
-              <span className="font-bold text-text-primary">GhostWrite</span>
+              <span className="text-[14px] font-semibold text-[#F5F1E8]">
+                GhostWrite
+              </span>
             </Link>
           </div>
         </header>
-
         <main className="flex-1 flex items-center justify-center p-6">
-          <div className="max-w-md w-full bg-background-card rounded-card-lg border border-red-500/30 p-8 text-center">
-            <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
-              <AlertCircle className="w-8 h-8 text-red-500" />
+          <div
+            className="max-w-sm w-full rounded-lg p-6 text-center"
+            style={{
+              background: "#242424",
+              border: "1px solid rgba(245, 241, 232, 0.06)",
+            }}
+          >
+            <div className="w-10 h-10 rounded-md bg-[#DC2626]/10 flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="w-5 h-5 text-[#DC2626]" />
             </div>
-            <h2 className="text-xl font-bold text-text-primary mb-2">
+            <h2 className="text-[15px] font-semibold text-[#F5F1E8] mb-2">
               No Results Found
             </h2>
-            <p className="text-text-secondary mb-6">{error}</p>
-            <Link 
-              to="/app/new" 
-              className="w-full py-3 bg-primary text-white rounded-btn font-semibold hover:bg-primary-hover transition-all inline-block"
+            <p className="text-[13px] text-[#F5F1E8]/50 mb-6">{error}</p>
+            <Link
+              to="/app/new"
+              className="inline-flex items-center justify-center w-full py-2 rounded-md text-[13px] font-medium text-[#F5F1E8] bg-[#DC2626]"
             >
               Generate New Content
             </Link>
           </div>
         </main>
       </div>
-    )
+    );
   }
 
-  // Filter to only show platforms with content
-  const platforms = platformsConfig.filter(p => outputs[p.id])
+  const platforms = platformsConfig.filter((p) => outputs[p.id]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="bg-background-card border-b border-border sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <Zap className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-text-primary">GhostWrite</span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link to="/app/new" className="btn-primary text-sm py-2 px-4">
-              <Plus className="w-4 h-4" /> New Content
+    <div className="min-h-screen bg-[#1A1A1A]">
+      <header
+        className="sticky top-0 z-40 border-b"
+        style={{
+          background: "rgba(26, 26, 26, 0.8)",
+          backdropFilter: "blur(12px)",
+          borderColor: "rgba(245, 241, 232, 0.06)",
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <Link to="/" className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[#DC2626] to-[#B91C1C] flex items-center justify-center">
+                <Ghost className="w-4 h-4 text-[#F5F1E8]" strokeWidth={2.5} />
+              </div>
+              <span className="text-[14px] font-semibold text-[#F5F1E8]">
+                GhostWrite
+              </span>
             </Link>
-            <Link to="/app/settings" className="text-sm font-medium text-text-secondary hover:text-primary">Settings</Link>
+            <div className="hidden md:flex items-center gap-2 text-[12px]">
+              <Link
+                to="/dashboard"
+                className="text-[#F5F1E8]/40 hover:text-[#F5F1E8]/70 transition-colors"
+              >
+                Dashboard
+              </Link>
+              <ChevronRight className="w-3 h-3 text-[#F5F1E8]/30" />
+              <span className="text-[#F5F1E8]/80">Results</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCopyAll}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[13px] text-[#F5F1E8]/60 hover:text-[#F5F1E8] transition-colors"
+            >
+              {copiedAll ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-[#DC2626]" />
+                  Copied
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  Copy all
+                </>
+              )}
+            </button>
+            <div className="w-px h-4 bg-[#F5F1E8]/10 mx-1" />
+            <Link
+              to="/app/settings"
+              className="px-3 py-1.5 text-[13px] text-[#F5F1E8]/60 hover:text-[#F5F1E8] transition-colors"
+            >
+              Settings
+            </Link>
+            <Link
+              to="/app/new"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[13px] font-medium text-[#F5F1E8] bg-[#DC2626]"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              New content
+            </Link>
           </div>
         </div>
       </header>
 
-      {/* Stats bar */}
-      <div className="bg-primary-muted border-b border-border-hover">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-sm text-primary font-medium">
-            <Check className="w-4 h-4" /> {platforms.length} formats generated
-            <span className="text-text-tertiary">•</span>
-            <span className="text-green-500">✨ AI Generated</span>
+      <div
+        className="border-b"
+        style={{ borderColor: "rgba(245, 241, 232, 0.04)" }}
+      >
+        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center gap-3 text-[12px] text-[#F5F1E8]/40">
+          <div className="flex items-center gap-1.5">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#DC2626]" />
+            <span className="text-[#F5F1E8]/60">
+              {platforms.length} formats ready
+            </span>
           </div>
-          <div className="flex gap-3">
-            <button 
-              onClick={handleCopyAll}
-              className="text-sm font-medium text-text-secondary hover:text-primary flex items-center gap-1"
-            >
-              <Copy className="w-4 h-4" /> Copy All
-            </button>
-            <button className="text-sm font-medium text-text-secondary hover:text-primary flex items-center gap-1">
-              <Share className="w-4 h-4" /> Share
-            </button>
-          </div>
+          <span className="text-[#F5F1E8]/20">·</span>
+          <span>Generated just now</span>
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid lg:grid-cols-12 gap-8">
-          {/* Sidebar */}
+      <main className="max-w-7xl mx-auto px-6 py-6">
+        <div className="grid lg:grid-cols-12 gap-6">
           <div className="lg:col-span-3">
-            <div className="bg-background-card rounded-card border border-border p-4 sticky top-24">
-              <h2 className="font-bold text-text-primary mb-4">Your Outputs</h2>
-              <div className="space-y-1">
+            <div className="sticky top-20">
+              <p className="text-[11px] font-medium text-[#F5F1E8]/40 uppercase tracking-wider px-2 mb-3">
+                Your Outputs
+              </p>
+              <nav className="space-y-0.5">
                 {platforms.map((p) => (
                   <button
                     key={p.id}
                     onClick={() => {
-                      setActivePlatform(p.id)
-                      document.getElementById(p.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                      setActivePlatform(p.id);
+                      document
+                        .getElementById(p.id)
+                        ?.scrollIntoView({
+                          behavior: "smooth",
+                          block: "start",
+                        });
                     }}
-                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                      activePlatform === p.id
-                        ? 'bg-primary-muted text-primary border-l-2 border-primary'
-                        : 'text-text-secondary hover:bg-background'
-                    }`}
+                    className={`group w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[13px] transition-colors ${activePlatform === p.id ? "bg-[#F5F1E8]/[0.06] text-[#F5F1E8]" : "text-[#F5F1E8]/50 hover:bg-[#F5F1E8]/[0.03] hover:text-[#F5F1E8]/80"}`}
                   >
-                    <p.icon className="w-4 h-4" />
-                    <span className="flex-1 text-left">{p.name}</span>
+                    <p.icon className="w-3.5 h-3.5 shrink-0" />
+                    <span className="flex-1 text-left truncate">{p.name}</span>
                     <span
                       onClick={(e) => {
-                        e.stopPropagation()
-                        handleCopy(p.id)
+                        e.stopPropagation();
+                        handleCopy(p.id);
                       }}
-                      className="text-text-tertiary hover:text-primary cursor-pointer"
+                      className="opacity-0 group-hover:opacity-100 text-[#F5F1E8]/40 hover:text-[#F5F1E8] transition-all"
                     >
-                      {copied === p.id ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-4 h-4" />}
+                      {copied === p.id ? (
+                        <Check className="w-3 h-3 text-[#DC2626]" />
+                      ) : (
+                        <Copy className="w-3 h-3" />
+                      )}
                     </span>
                   </button>
                 ))}
-              </div>
-              <div className="mt-4 pt-4 border-t border-border space-y-2">
-                <button 
+              </nav>
+              <div
+                className="mt-6 pt-4 space-y-2"
+                style={{ borderTop: "1px solid rgba(245, 241, 232, 0.06)" }}
+              >
+                <button
                   onClick={handleCopyAll}
-                  className="w-full py-2 border border-primary text-primary rounded-btn text-sm font-semibold hover:bg-primary-muted transition-colors"
+                  className="w-full flex items-center justify-center gap-1.5 py-2 rounded-md text-[13px] font-medium text-[#F5F1E8]/70 hover:text-[#F5F1E8] transition-colors"
+                  style={{
+                    background: "rgba(245, 241, 232, 0.04)",
+                    border: "1px solid rgba(245, 241, 232, 0.06)",
+                  }}
                 >
-                  Copy All Outputs
+                  {copiedAll ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-[#DC2626]" />
+                      Copied all
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      Copy all outputs
+                    </>
+                  )}
+                </button>
+                <button className="w-full flex items-center justify-center gap-1.5 py-2 rounded-md text-[13px] font-medium text-[#F5F1E8]/50 hover:text-[#F5F1E8]/70 transition-colors">
+                  <Download className="w-3.5 h-3.5" />
+                  Export as file
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Main output grid */}
-          <div className="lg:col-span-9 space-y-6">
+          <div className="lg:col-span-9 space-y-3">
             {platforms.map((p) => {
-              const content = outputs[p.id] || ''
-              const score = calculateScore(content)
-              const wordCount = content.split(/\s+/).filter(Boolean).length
-              
+              const content = outputs[p.id] || "";
+              const wordCount = content.split(/\s+/).filter(Boolean).length;
+              const isEditing = editing === p.id;
               return (
-                <motion.div
+                <div
                   key={p.id}
                   id={p.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className={`bg-background-card rounded-card border border-border p-6 transition-all ${activePlatform === p.id ? 'ring-2 ring-primary/20' : ''}`}
+                  className={`rounded-lg ${activePlatform === p.id ? "ring-1 ring-[#F5F1E8]/10" : ""}`}
+                  style={{
+                    background: "#242424",
+                    border: "1px solid rgba(245, 241, 232, 0.06)",
+                  }}
                 >
-                  <div className="flex items-center justify-between mb-4">
+                  <div
+                    className="flex items-center justify-between px-5 py-3 border-b"
+                    style={{ borderColor: "rgba(245, 241, 232, 0.04)" }}
+                  >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary-muted flex items-center justify-center">
-                        <p.icon className="w-5 h-5 text-primary" />
+                      <div
+                        className="w-7 h-7 rounded-md flex items-center justify-center"
+                        style={{ background: "rgba(245, 241, 232, 0.04)" }}
+                      >
+                        <p.icon className="w-3.5 h-3.5 text-[#F5F1E8]/80" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-text-primary">{p.name}</h3>
-                        <span className="text-xs text-text-secondary">{p.format}</span>
+                        <h3 className="text-[14px] font-semibold text-[#F5F1E8]">
+                          {p.name}
+                        </h3>
+                        <span className="text-[11px] text-[#F5F1E8]/40">
+                          {p.format}
+                        </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                       <button
-                        onClick={() => setEditing(editing === p.id ? null : p.id)}
-                        className="p-2 rounded-lg border border-border text-text-secondary hover:text-primary hover:border-primary/30 transition-colors"
-                        title="Edit"
+                        onClick={() => setEditing(isEditing ? null : p.id)}
+                        className="p-1.5 rounded-md text-[#F5F1E8]/40 hover:text-[#F5F1E8]/80 hover:bg-[#F5F1E8]/[0.06] transition-colors"
                       >
-                        <Pencil className="w-4 h-4" />
+                        <Pencil className="w-3.5 h-3.5" />
                       </button>
+                      <button
+                        onClick={() => alert("Coming soon")}
+                        className="p-1.5 rounded-md text-[#F5F1E8]/40 hover:text-[#F5F1E8]/80 hover:bg-[#F5F1E8]/[0.06] transition-colors"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                      </button>
+                      <div className="w-px h-4 bg-[#F5F1E8]/10 mx-1" />
                       <button
                         onClick={() => handleCopy(p.id)}
-                        className="px-3 py-2 rounded-lg border border-border text-text-secondary hover:text-primary hover:border-primary/30 transition-colors flex items-center gap-1 text-sm font-medium"
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[12px] font-medium text-[#F5F1E8]/70 hover:text-[#F5F1E8] hover:bg-[#F5F1E8]/[0.06] transition-colors"
                       >
-                        {copied === p.id ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-4 h-4" />}
-                        {copied === p.id ? 'Copied!' : 'Copy'}
-                      </button>
-                      <button
-                        onClick={() => handleRegenerate(p.id)}
-                        className="p-2 rounded-lg border border-border text-text-secondary hover:text-primary hover:border-primary/30 transition-colors"
-                        title="Regenerate"
-                      >
-                        <RefreshCw className="w-4 h-4" />
+                        {copied === p.id ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-[#DC2626]" />
+                            Copied
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5" />
+                            Copy
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>
-
-                  <div className="bg-background rounded-lg p-4 text-sm text-text-primary leading-relaxed whitespace-pre-wrap">
-                    {editing === p.id ? (
+                  <div className="px-5 py-4">
+                    {isEditing ? (
                       <textarea
                         value={outputs[p.id]}
-                        onChange={(e) => setOutputs({ ...outputs, [p.id]: e.target.value })}
-                        className="w-full min-h-[200px] bg-transparent outline-none resize-none"
+                        onChange={(e) =>
+                          setOutputs({ ...outputs, [p.id]: e.target.value })
+                        }
+                        className="w-full min-h-[200px] text-[14px] text-[#F5F1E8]/90 bg-transparent outline-none resize-none"
+                        style={{ lineHeight: "1.7" }}
+                        autoFocus
                       />
                     ) : (
-                      content
+                      <div
+                        className="text-[14px] text-[#F5F1E8]/85 whitespace-pre-wrap"
+                        style={{ lineHeight: "1.7" }}
+                      >
+                        {content}
+                      </div>
                     )}
                   </div>
-
-                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-4 text-xs text-text-secondary">
+                  <div
+                    className="flex items-center justify-between px-5 py-3 border-t"
+                    style={{ borderColor: "rgba(245, 241, 232, 0.04)" }}
+                  >
+                    <div className="flex items-center gap-4 text-[11px] text-[#F5F1E8]/40">
                       <span>{wordCount} words</span>
-                      <span>{content.length} chars</span>
-                      <span className="text-primary font-medium">Quality Score: {score}/100 ✓</span>
+                      <span className="text-[#F5F1E8]/20">·</span>
+                      <span>{content.length} characters</span>
                     </div>
-                    <div className="text-xs text-text-tertiary flex items-center gap-1">
+                    <div className="text-[11px] text-[#F5F1E8]/40">
                       💡 {tips[p.id]}
                     </div>
                   </div>
-
-                  {editing === p.id && (
-                    <div className="mt-4 flex gap-2">
-                      <button
-                        onClick={handleSaveEdit}
-                        className="px-4 py-2 bg-primary text-white rounded-btn text-sm font-semibold"
-                      >
-                        Save Changes
-                      </button>
+                  {isEditing && (
+                    <div
+                      className="flex items-center justify-end gap-2 px-5 py-3 border-t"
+                      style={{ borderColor: "rgba(245, 241, 232, 0.04)" }}
+                    >
                       <button
                         onClick={() => setEditing(null)}
-                        className="px-4 py-2 border border-border text-text-secondary rounded-btn text-sm font-semibold hover:bg-background"
+                        className="px-3 py-1.5 rounded-md text-[13px] font-medium text-[#F5F1E8]/60 hover:text-[#F5F1E8]"
                       >
                         Cancel
                       </button>
+                      <button
+                        onClick={handleSaveEdit}
+                        className="px-3 py-1.5 rounded-md text-[13px] font-medium text-[#F5F1E8] bg-[#DC2626]"
+                      >
+                        Save changes
+                      </button>
                     </div>
                   )}
-                </motion.div>
-              )
+                </div>
+              );
             })}
           </div>
         </div>
       </main>
     </div>
-  )
+  );
 }
 
-export default AppResults
+export default AppResults;

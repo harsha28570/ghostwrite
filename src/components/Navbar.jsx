@@ -1,97 +1,172 @@
-import { useState, useEffect } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { scrollToSection } from '../utils/navigation'
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Menu,
+  X,
+  Ghost,
+  ArrowRight,
+  Sparkles,
+  LayoutDashboard,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { scrollToSection } from "../utils/navigation";
 
 const navLinks = [
-  { name: 'Features', href: '#features', type: 'section' },
-  { name: 'How it works', href: '#how-it-works', type: 'section' },
-  { name: 'Pricing', href: '#pricing', type: 'pricing' },
-  { name: 'FAQ', href: '#faq', type: 'section' },
-]
+  { name: "Features", href: "#features", type: "section" },
+  { name: "How it works", href: "#how-it-works", type: "section" },
+  { name: "Pricing", href: "#pricing", type: "pricing" },
+  { name: "FAQ", href: "#faq", type: "section" },
+];
 
 function Navbar() {
-  const [scrolled, setScrolled] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const location = useLocation()
-  const navigate = useNavigate()
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20)
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleSectionNav = (href) => {
-    if (location.pathname === '/') {
-      scrollToSection(href)
+    if (location.pathname === "/") {
+      scrollToSection(href);
     } else {
-      navigate(`/${href}`)
+      navigate(`/${href}`);
     }
-    setMobileOpen(false)
-  }
+    setMobileOpen(false);
+  };
 
   const handlePricingNav = () => {
-    if (location.pathname === '/') {
-      scrollToSection('#pricing')
+    if (location.pathname === "/") {
+      scrollToSection("#pricing");
     } else {
-      navigate('/pricing')
+      navigate("/pricing");
     }
-    setMobileOpen(false)
-  }
+    setMobileOpen(false);
+  };
 
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? 'bg-background/80 backdrop-blur-xl border-b border-border'
-            : 'bg-transparent'
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          scrolled ? "py-3" : "py-5"
         }`}
       >
-        <div className="max-w-6xl mx-auto h-16 px-4 sm:px-6 flex items-center justify-between">
-          <Link to="/" className="font-heading text-lg font-semibold text-white tracking-tight transition-opacity duration-300 hover:opacity-80">
-            GhostWrite
-          </Link>
-
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) =>
-              link.type === 'pricing' ? (
-                <button key={link.name} onClick={handlePricingNav} className="nav-link">
-                  {link.name}
-                </button>
-              ) : link.type === 'section' ? (
-                <button key={link.name} onClick={() => handleSectionNav(link.href)} className="nav-link">
-                  {link.name}
-                </button>
-              ) : (
-                <Link key={link.name} to={link.href} className="nav-link">
-                  {link.name}
-                </Link>
-              )
-            )}
-          </div>
-
-          <div className="hidden md:flex items-center gap-3">
-            <Link to="/login" className="nav-link px-3 py-1.5">
-              Sign in
-            </Link>
-            <Link to="/signup" className="btn-primary text-sm py-2 px-4">
-              Get started
-            </Link>
-          </div>
-
-          <button
-            className="md:hidden p-2 text-text-secondary hover:text-white transition-colors duration-300"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div
+            className="relative rounded-full transition-all duration-500"
+            style={{
+              background: scrolled
+                ? "rgba(26, 26, 26, 0.65)"
+                : "rgba(26, 26, 26, 0.45)",
+              backdropFilter: "blur(40px) saturate(180%)",
+              WebkitBackdropFilter: "blur(40px) saturate(180%)",
+              border: scrolled
+                ? "1px solid rgba(245, 241, 232, 0.12)"
+                : "1px solid rgba(245, 241, 232, 0.06)",
+              boxShadow: scrolled
+                ? "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(245, 241, 232, 0.05)"
+                : "0 4px 16px rgba(0, 0, 0, 0.1)",
+            }}
           >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+            <div className="relative flex items-center justify-between px-5 sm:px-6 h-14">
+              {/* Logo */}
+              <Link
+                to="/"
+                className="group flex items-center gap-2.5 transition-all duration-300"
+              >
+                <div className="relative">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#DC2626] via-[#B91C1C] to-[#7F1D1D] flex items-center justify-center shadow-[0_0_15px_rgba(220,38,38,0.3)] group-hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] transition-all duration-500 group-hover:scale-105">
+                    <Ghost
+                      className="w-4 h-4 text-[#F5F1E8]"
+                      strokeWidth={2.5}
+                    />
+                  </div>
+                </div>
+                <span className="text-[15px] font-semibold text-[#F5F1E8] tracking-tight">
+                  GhostWrite
+                </span>
+              </Link>
+
+              {/* Desktop Nav Links */}
+              <div className="hidden lg:flex items-center gap-1 mx-4">
+                {navLinks.map((link) => (
+                  <button
+                    key={link.name}
+                    onClick={() =>
+                      link.type === "pricing"
+                        ? handlePricingNav()
+                        : handleSectionNav(link.href)
+                    }
+                    className="relative px-3.5 py-1.5 text-[13.5px] font-medium text-[#F5F1E8]/70 hover:text-[#F5F1E8] transition-all duration-300 rounded-full hover:bg-[#F5F1E8]/[0.08]"
+                  >
+                    {link.name}
+                  </button>
+                ))}
+              </div>
+
+              {/* Desktop CTAs */}
+              <div className="hidden lg:flex items-center gap-2">
+                <Link
+                  to="/login"
+                  className="px-3.5 py-1.5 text-[13.5px] font-medium text-[#F5F1E8]/70 hover:text-[#F5F1E8] transition-all duration-300 rounded-full hover:bg-[#F5F1E8]/[0.08]"
+                >
+                  Sign in
+                </Link>
+
+                <Link
+                  to="/signup"
+                  className="group relative inline-flex items-center gap-1.5 px-4 py-1.5 text-[13.5px] font-medium text-[#F5F1E8] rounded-full transition-all duration-300 bg-[#DC2626] hover:bg-[#B91C1C]"
+                  style={{
+                    boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
+                  }}
+                >
+                  <span className="relative flex items-center gap-1.5">
+                    Get Started
+                    <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-0.5" />
+                  </span>
+                </Link>
+              </div>
+
+              {/* Mobile Menu Button */}
+              <button
+                className="lg:hidden relative w-9 h-9 flex items-center justify-center text-[#F5F1E8]/70 hover:text-[#F5F1E8] transition-all duration-300 rounded-full hover:bg-[#F5F1E8]/[0.08]"
+                onClick={() => setMobileOpen(!mobileOpen)}
+                aria-label="Toggle menu"
+              >
+                <AnimatePresence mode="wait">
+                  {mobileOpen ? (
+                    <motion.div
+                      key="close"
+                      initial={{ rotate: -90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: 90, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <X className="w-4 h-4" strokeWidth={2.5} />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="menu"
+                      initial={{ rotate: 90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: -90, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Menu className="w-4 h-4" strokeWidth={2.5} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </button>
+            </div>
+          </div>
         </div>
       </nav>
 
+      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileOpen && (
           <>
@@ -99,58 +174,98 @@ function Navbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-40 lg:hidden"
+              style={{
+                background: "rgba(26, 26, 26, 0.5)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+              }}
               onClick={() => setMobileOpen(false)}
             />
+
             <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-              className="fixed top-16 left-4 right-4 bg-background-surface border border-border rounded-card-lg z-50 p-4 md:hidden"
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="fixed top-20 left-4 right-4 z-50 lg:hidden"
             >
-              <div className="flex flex-col gap-1">
-                {navLinks.map((link) =>
-                  link.type === 'pricing' ? (
-                    <button
-                      key={link.name}
-                      onClick={handlePricingNav}
-                      className="text-left px-3 py-2.5 text-sm text-text-secondary hover:text-white transition-colors duration-300"
+              <div
+                className="relative rounded-2xl overflow-hidden"
+                style={{
+                  background: "rgba(26, 26, 26, 0.75)",
+                  backdropFilter: "blur(60px) saturate(180%)",
+                  WebkitBackdropFilter: "blur(60px) saturate(180%)",
+                  border: "1px solid rgba(245, 241, 232, 0.1)",
+                  boxShadow:
+                    "0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(245, 241, 232, 0.05)",
+                }}
+              >
+                {/* Accent line */}
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#DC2626] to-transparent" />
+
+                <div className="relative p-3">
+                  <div className="flex flex-col gap-0.5 mb-3">
+                    {navLinks.map((link) => (
+                      <button
+                        key={link.name}
+                        onClick={() =>
+                          link.type === "pricing"
+                            ? handlePricingNav()
+                            : handleSectionNav(link.href)
+                        }
+                        className="group flex items-center justify-between px-3 py-2.5 text-left text-[14px] font-medium text-[#F5F1E8]/70 hover:text-[#F5F1E8] hover:bg-[#F5F1E8]/[0.05] rounded-xl transition-all duration-200"
+                      >
+                        <span>{link.name}</span>
+                        <ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
+                      </button>
+                    ))}
+
+                    <Link
+                      to="/dashboard"
+                      onClick={() => setMobileOpen(false)}
+                      className="group flex items-center justify-between px-3 py-2.5 text-[14px] font-medium text-[#F5F1E8]/70 hover:text-[#F5F1E8] hover:bg-[#F5F1E8]/[0.05] rounded-xl transition-all duration-200"
                     >
-                      {link.name}
-                    </button>
-                  ) : (
-                    <button
-                      key={link.name}
-                      onClick={() => handleSectionNav(link.href)}
-                      className="text-left px-3 py-2.5 text-sm text-text-secondary hover:text-white transition-colors duration-300"
+                      <span className="flex items-center gap-2">
+                        <LayoutDashboard className="w-3.5 h-3.5" />
+                        Dashboard
+                      </span>
+                      <ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
+                    </Link>
+                  </div>
+
+                  <div className="h-px bg-[#F5F1E8]/[0.06] my-2" />
+
+                  <div className="flex flex-col gap-2 pt-1">
+                    <Link
+                      to="/login"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-center w-full px-4 py-2.5 border border-[#F5F1E8]/[0.1] hover:border-[#F5F1E8]/[0.2] text-[#F5F1E8]/70 hover:text-[#F5F1E8] rounded-xl transition-all duration-300 text-[14px] font-medium"
                     >
-                      {link.name}
-                    </button>
-                  )
-                )}
-                <Link
-                  to="/dashboard"
-                  onClick={() => setMobileOpen(false)}
-                  className="px-3 py-2.5 text-sm text-text-secondary hover:text-white transition-colors duration-300"
-                >
-                  Dashboard
-                </Link>
-              </div>
-              <div className="mt-4 pt-4 border-t border-border flex flex-col gap-2">
-                <Link to="/login" onClick={() => setMobileOpen(false)} className="btn-secondary w-full text-sm py-2.5">
-                  Sign in
-                </Link>
-                <Link to="/signup" onClick={() => setMobileOpen(false)} className="btn-primary w-full text-sm py-2.5">
-                  Get started
-                </Link>
+                      Sign in
+                    </Link>
+
+                    <Link
+                      to="/signup"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-[#F5F1E8] rounded-xl transition-all duration-300 text-[14px] font-medium bg-[#DC2626] hover:bg-[#B91C1C]"
+                      style={{
+                        boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
+                      }}
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      Get Started Free
+                    </Link>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
     </>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;

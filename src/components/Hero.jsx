@@ -1,181 +1,180 @@
-import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, Play, Zap } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { Link } from "react-router-dom";
+import { ArrowRight, Ghost, Play } from "lucide-react";
+import { useState, useEffect } from "react";
 
 function Hero() {
-  const [typedText, setTypedText] = useState('')
-  const platforms = ['Twitter', 'LinkedIn', 'Instagram', 'TikTok', 'YouTube']
-  const [platformIndex, setPlatformIndex] = useState(0)
+  const [typedText, setTypedText] = useState("");
+  const platforms = ["Twitter", "LinkedIn", "Instagram", "TikTok", "YouTube"];
+  const [platformIndex, setPlatformIndex] = useState(0);
 
-  // Typing effect for rotating platforms
   useEffect(() => {
-    const currentPlatform = platforms[platformIndex]
-    let charIndex = 0
-    
+    const currentPlatform = platforms[platformIndex];
+    let charIndex = 0;
+
     const typingInterval = setInterval(() => {
       if (charIndex <= currentPlatform.length) {
-        setTypedText(currentPlatform.substring(0, charIndex))
-        charIndex++
+        setTypedText(currentPlatform.substring(0, charIndex));
+        charIndex++;
       } else {
-        clearInterval(typingInterval)
+        clearInterval(typingInterval);
         setTimeout(() => {
-          setPlatformIndex((prev) => (prev + 1) % platforms.length)
-        }, 1500)
+          setPlatformIndex((prev) => (prev + 1) % platforms.length);
+        }, 1500);
       }
-    }, 100)
+    }, 100);
 
-    return () => clearInterval(typingInterval)
-  }, [platformIndex])
+    return () => clearInterval(typingInterval);
+  }, [platformIndex]);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 bg-background">
-      
-      {/* Center Glow Only */}
-<div className="absolute inset-0 overflow-hidden pointer-events-none">
-  <div className="absolute w-[800px] h-[800px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-purple-500/20 rounded-full blur-[120px]" />
-</div>
-      {/* Animated Grid Pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
-
+    <section className="relative min-h-screen flex items-center justify-center pt-24 pb-16 bg-[#1A1A1A]">
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 text-center">
-        
-        {/* Animated Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: -20, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 rounded-full border border-purple-500/30 bg-purple-500/10 backdrop-blur-sm group hover:border-purple-500/50 transition-all cursor-default"
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-10 rounded-full border border-[#F5F1E8]/10 bg-[#F5F1E8]/[0.03]">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626]" />
+          <span className="text-[13px] text-[#F5F1E8]/70 font-medium tracking-tight">
+            AI-powered content repurposing
           </span>
-          <span className="text-sm text-purple-200 font-medium">
-            New: AI-powered repurposing
-          </span>
-          <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-        </motion.div>
+        </div>
 
-        {/* Main Heading with Gradient and Glow */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="font-heading text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight leading-[1.05] mb-6"
-          style={{ letterSpacing: '-0.04em' }}
+        {/* Heading */}
+        <h1
+          className="mb-8 text-[#F5F1E8]"
+          style={{
+            fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+            fontSize: "clamp(2.5rem, 8vw, 6rem)",
+            fontWeight: 700,
+            lineHeight: 0.95,
+            letterSpacing: "-0.045em",
+          }}
         >
-          <span className="inline-block">One input.</span>
-          <br />
-          <span className="bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 bg-clip-text text-transparent inline-block">
-            Ten platforms.
-          </span>
-        </motion.h1>
+          <span className="block">One input.</span>
+          <span className="block">Ten platforms.</span>
+        </h1>
 
-        {/* Typing Effect for Platforms */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-2xl sm:text-3xl text-gray-400 font-light mb-8 h-10"
-        >
-          Built for{' '}
-          <span className="text-white font-medium">
-            {typedText}
-            <span className="inline-block w-1 h-7 bg-purple-500 ml-1 animate-pulse"></span>
-          </span>
-        </motion.div>
-
-        {/* Sub heading */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed mb-12"
-        >
-          Turn any piece of content into platform-optimized formats in under{' '}
-          <span className="text-white font-medium relative">
-            30 seconds
-            <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-purple-500/50"></span>
-          </span>
-          .
-          <br />
-          Built for creators who ship fast.
-        </motion.p>
-
-        {/* CTA Buttons with Better Styling */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
-        >
-          {/* Primary CTA */}
-          <Link 
-            to="/signup" 
-            className="group relative inline-flex items-center gap-2 px-8 py-4 bg-purple-500 hover:bg-purple-600 text-white font-medium rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/40 overflow-hidden"
-          >
-            <span className="absolute inset-0 bg-gradient-to-r from-purple-600 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-            <span className="relative flex items-center gap-2">
-              <Zap className="w-4 h-4" />
-              Start Creating Free
-              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+        {/* Typing Effect */}
+        <div className="mb-10 h-8">
+          <div className="inline-flex items-center gap-2 text-[15px] sm:text-[17px] text-[#F5F1E8]/60 font-medium">
+            <span>Perfect for</span>
+            <span className="inline-flex items-center px-3 py-1 rounded-lg text-[#F5F1E8] border border-[#F5F1E8]/10 bg-[#F5F1E8]/[0.03]">
+              {typedText}
+              <span className="inline-block w-[2px] h-4 bg-[#DC2626] ml-0.5 animate-pulse" />
             </span>
+          </div>
+        </div>
+
+        {/* Subheading */}
+        <p className="text-[17px] sm:text-[19px] text-[#F5F1E8]/60 max-w-2xl mx-auto leading-relaxed mb-12">
+          Transform any content into{" "}
+          <span className="text-[#F5F1E8] font-medium">
+            10 platform-optimized formats
+          </span>{" "}
+          in under 30 seconds.
+          <br className="hidden sm:block" />
+          Built for creators who ship fast.
+        </p>
+
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-20">
+          {/* Primary CTA - Crimson */}
+          <Link
+            to="/signup"
+            className="group inline-flex items-center gap-2 px-6 py-3 text-[15px] font-medium text-[#F5F1E8] rounded-lg bg-[#DC2626] hover:bg-[#B91C1C] transition-colors"
+          >
+            <span>Start Creating Free</span>
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" />
           </Link>
 
-          {/* Secondary CTA */}
-          <button 
-            onClick={() => document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' })}
-            className="group inline-flex items-center gap-2 px-8 py-4 border border-white/20 hover:border-white/40 text-white font-medium rounded-lg transition-all duration-300 hover:bg-white/5 backdrop-blur-sm"
+          {/* Secondary CTA - Dark Outline */}
+          <button
+            onClick={() =>
+              document
+                .getElementById("demo")
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
+            className="inline-flex items-center gap-2 px-6 py-3 text-[15px] font-medium text-[#F5F1E8]/80 hover:text-[#F5F1E8] rounded-lg border border-[#F5F1E8]/10 hover:border-[#1A1A1A]/20 transition-colors"
           >
-            <Play className="w-4 h-4 transition-transform group-hover:scale-125" />
-            Watch Demo
+            <Play className="w-3.5 h-3.5 fill-current" />
+            <span>Watch Demo</span>
           </button>
-        </motion.div>
+        </div>
 
-        {/* Stats Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="flex flex-wrap items-center justify-center gap-8 mb-8"
-        >
-          {[
-            { value: '10×', label: 'Faster', sublabel: 'than manual' },
-            { value: '30s', label: 'Generation', sublabel: 'on average' },
-            { value: '10', label: 'Platforms', sublabel: 'supported' },
-          ].map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 + index * 0.1 }}
-              className="text-center"
-            >
-              <div className="text-3xl font-bold bg-gradient-to-b from-white to-purple-400 bg-clip-text text-transparent">
-                {stat.value}
+        {/* Product Preview - Dark Mockup on Cream */}
+        <div className="max-w-4xl mx-auto">
+          <div className="rounded-2xl overflow-hidden border border-[#F5F1E8]/10 bg-[#1A1A1A]">
+            {/* Window Header - Dark */}
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-[#F5F1E8]/10">
+              <div className="flex gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-[#DC2626]" />
+                <div className="w-3 h-3 rounded-full bg-[#F5F1E8]/30" />
+                <div className="w-3 h-3 rounded-full bg-[#F5F1E8]/30" />
               </div>
-              <div className="text-xs text-gray-500 mt-1">
-                {stat.label} <span className="text-gray-600">{stat.sublabel}</span>
+              <div className="flex-1 flex justify-center">
+                <div className="flex items-center gap-2 px-3 py-1 rounded-md border border-[#F5F1E8]/10 text-[11px] text-[#F5F1E8]/40 font-mono">
+                  <Ghost className="w-3 h-3" />
+                  ghostwrite.ai
+                </div>
               </div>
-            </motion.div>
-          ))}
-        </motion.div>
+              <div className="w-16" />
+            </div>
 
-        {/* Trust Indicators */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          className="flex flex-col items-center gap-3"
-        >
-          <p className="text-sm text-gray-500">
-            ✨ No credit card required · Free forever plan
+            {/* Window Content - Dark */}
+            <div className="p-8 sm:p-12">
+              <div className="text-left space-y-6">
+                {/* Command Input */}
+                <div className="flex items-center gap-3 p-4 rounded-lg border border-[#F5F1E8]/10 bg-[#F5F1E8]/[0.02]">
+                  <div className="w-2 h-2 rounded-full bg-[#DC2626]" />
+                  <div className="flex-1 text-[#F5F1E8]/80 text-[15px] font-mono">
+                    Paste your blog post here...
+                  </div>
+                  <kbd className="px-2 py-0.5 rounded text-[10px] font-mono text-[#F5F1E8]/40 border border-[#F5F1E8]/10">
+                    ⌘ K
+                  </kbd>
+                </div>
+
+                {/* Processing */}
+                <div className="flex items-center gap-3 text-[13px] text-[#F5F1E8]/40 font-mono">
+                  <div className="flex gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#DC2626] animate-pulse" />
+                    <div
+                      className="w-1.5 h-1.5 rounded-full bg-[#DC2626] animate-pulse"
+                      style={{ animationDelay: "0.2s" }}
+                    />
+                    <div
+                      className="w-1.5 h-1.5 rounded-full bg-[#DC2626] animate-pulse"
+                      style={{ animationDelay: "0.4s" }}
+                    />
+                  </div>
+                  <span>Generating 10 formats...</span>
+                </div>
+
+                {/* Platform Cards */}
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                  {["Twitter", "LinkedIn", "Instagram", "Email", "TikTok"].map(
+                    (platform) => (
+                      <div
+                        key={platform}
+                        className="p-3 rounded-lg border border-[#F5F1E8]/10 text-[11px] text-[#F5F1E8]/60 font-medium text-center"
+                      >
+                        ✓ {platform}
+                      </div>
+                    ),
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Trust */}
+        <div className="mt-16">
+          <p className="text-[13px] text-[#F5F1E8]/40">
+            No credit card required · Free forever plan · Built with AI
           </p>
-        </motion.div>
+        </div>
       </div>
     </section>
-  )
+  );
 }
 
-export default Hero
+export default Hero;

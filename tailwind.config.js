@@ -1,70 +1,52 @@
-/** @type {import('tailwindcss').Config} */
+﻿/** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
-        primary: {
-          DEFAULT: '#A855F7',
-          dark: '#9333EA',
-          light: '#C084FC',
-          muted: 'rgba(168, 85, 247, 0.15)',
-        },
+        // Base Backgrounds
         background: {
-          DEFAULT: '#0A0A0A',
-          surface: '#111111',
-          card: '#1A1A1A',
+          DEFAULT: "#1A1A1A", // Main charcoal
+          deep: "#0F0F0F", // Deeper black
+          card: "#242424", // Elevated cards
+          hover: "#2D2D2D", // Hover states
         },
+
+        // Text (Cream White)
         text: {
-          primary: '#FFFFFF',
-          secondary: '#A1A1AA',
-          tertiary: '#71717A',
+          primary: "#F5F1E8", // Main cream
+          secondary: "rgba(245, 241, 232, 0.7)",
+          muted: "rgba(245, 241, 232, 0.5)",
+          subtle: "rgba(245, 241, 232, 0.3)",
         },
+
+        // Borders
         border: {
-          DEFAULT: 'rgba(255, 255, 255, 0.08)',
-          hover: 'rgba(168, 85, 247, 0.5)',
+          DEFAULT: "rgba(245, 241, 232, 0.1)",
+          hover: "rgba(245, 241, 232, 0.2)",
+        },
+
+        // PRIMARY ACCENT: Crimson Red
+        accent: {
+          DEFAULT: "#DC2626",
+          hover: "#B91C1C",
+          light: "#EF4444",
+          soft: "rgba(220, 38, 38, 0.08)",
+          glow: "rgba(220, 38, 38, 0.15)",
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        heading: ['"Space Grotesk"', 'Inter', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
-      },
-      fontSize: {
-        'display': ['72px', { lineHeight: '1.05', letterSpacing: '-0.04em' }],
-        'display-lg': ['96px', { lineHeight: '1.0', letterSpacing: '-0.04em' }],
-        'h1': ['48px', { lineHeight: '1.1', letterSpacing: '-0.03em' }],
-        'h2': ['36px', { lineHeight: '1.15', letterSpacing: '-0.03em' }],
-        'h3': ['24px', { lineHeight: '1.25', letterSpacing: '-0.02em' }],
-        'body-lg': ['18px', { lineHeight: '1.7' }],
-        'body': ['16px', { lineHeight: '1.6' }],
-        'body-sm': ['14px', { lineHeight: '1.5' }],
-        'label': ['12px', { lineHeight: '1.4', letterSpacing: '0.06em' }],
-      },
-      borderRadius: {
-        'btn': '8px',
-        'card': '12px',
-        'card-lg': '16px',
-        'input': '8px',
-      },
-      boxShadow: {
-        'glow': '0 0 60px rgba(168, 85, 247, 0.15)',
-        'glow-sm': '0 0 30px rgba(168, 85, 247, 0.1)',
-      },
-      animation: {
-        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'fade-in': 'fadeIn 0.6s ease-out forwards',
-      },
-      keyframes: {
-        fadeIn: {
-          from: { opacity: '0', transform: 'translateY(16px)' },
-          to: { opacity: '1', transform: 'translateY(0)' },
-        },
+        sans: [
+          "Inter",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "system-ui",
+          "sans-serif",
+        ],
+        // Optional: Editorial serif for special headings
+        serif: ["Georgia", "Cambria", "serif"],
       },
     },
   },
   plugins: [],
-}
+};
