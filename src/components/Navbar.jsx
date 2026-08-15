@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import {
   Menu,
   X,
@@ -110,25 +111,38 @@ function Navbar() {
 
               {/* Desktop CTAs */}
               <div className="hidden lg:flex items-center gap-2">
-                <Link
-                  to="/login"
-                  className="px-3.5 py-1.5 text-[13.5px] font-medium text-[#F5F1E8]/70 hover:text-[#F5F1E8] transition-all duration-300 rounded-full hover:bg-[#F5F1E8]/[0.08]"
-                >
-                  Sign in
-                </Link>
+                <SignedOut>
+                  <Link
+                    to="/login"
+                    className="px-3.5 py-1.5 text-[13.5px] font-medium text-[#F5F1E8]/70 hover:text-[#F5F1E8] transition-all duration-300 rounded-full hover:bg-[#F5F1E8]/[0.08]"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="group relative inline-flex items-center gap-1.5 px-4 py-1.5 text-[13.5px] font-medium text-[#F5F1E8] rounded-full transition-all duration-300 bg-[#DC2626] hover:bg-[#B91C1C]"
+                    style={{ boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)" }}
+                  >
+                    <span className="relative flex items-center gap-1.5">
+                      Get Started
+                      <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-0.5" />
+                    </span>
+                  </Link>
+                </SignedOut>
 
-                <Link
-                  to="/signup"
-                  className="group relative inline-flex items-center gap-1.5 px-4 py-1.5 text-[13.5px] font-medium text-[#F5F1E8] rounded-full transition-all duration-300 bg-[#DC2626] hover:bg-[#B91C1C]"
-                  style={{
-                    boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
-                  }}
-                >
-                  <span className="relative flex items-center gap-1.5">
-                    Get Started
-                    <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-0.5" />
-                  </span>
-                </Link>
+                <SignedIn>
+                  <Link
+                    to="/dashboard"
+                    className="px-3.5 py-1.5 text-[13.5px] font-medium text-[#F5F1E8]/70 hover:text-[#F5F1E8] transition-all duration-300 rounded-full hover:bg-[#F5F1E8]/[0.08]"
+                  >
+                    Dashboard
+                  </Link>
+                  <UserButton
+                    appearance={{
+                      elements: { avatarBox: "w-8 h-8 rounded-lg" },
+                    }}
+                  />
+                </SignedIn>
               </div>
 
               {/* Mobile Menu Button */}

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { UserButton, useUser } from "@clerk/clerk-react";
 import {
   Plus,
   FileText,
@@ -104,6 +105,7 @@ const platformIcons = {
 
 function Dashboard() {
   const [selectedTab, setSelectedTab] = useState("recent");
+  const { user } = useUser();""
 
   return (
     <div className="min-h-screen bg-[#1A1A1A]">
@@ -165,7 +167,6 @@ function Dashboard() {
               <Bell className="w-4 h-4" />
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#DC2626] animate-pulse" />
             </button>
-
             <Link
               to="/app/settings"
               className="p-2 rounded-lg text-[#F5F1E8]/60 hover:text-[#F5F1E8] transition-all"
@@ -176,16 +177,14 @@ function Dashboard() {
             >
               <Settings className="w-4 h-4" />
             </Link>
-
             <div className="w-px h-6 bg-[#F5F1E8]/10 mx-1" />
-
-            <Link
-              to="/login"
-              className="flex items-center gap-2 px-3 py-2 text-[13px] text-[#F5F1E8]/60 hover:text-[#F5F1E8] transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Sign out</span>
-            </Link>
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: "w-8 h-8 rounded-lg",
+                },
+              }}
+            />
           </div>
         </div>
       </header>
@@ -230,7 +229,7 @@ function Dashboard() {
                 className="text-3xl md:text-4xl font-bold text-[#F5F1E8] mb-2"
                 style={{ letterSpacing: "-0.03em" }}
               >
-                Welcome back, Creator
+                Welcome back, {user?.firstName || "Creator"}
               </h1>
               <p className="text-[14px] text-[#F5F1E8]/60 max-w-lg">
                 Your creative hub is ready. Let's transform some content today.
