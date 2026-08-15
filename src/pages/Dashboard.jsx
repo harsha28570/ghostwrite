@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { getUserGenerations, getUserUsage } from "../services/supabase";
+import { useState, useEffect } from "react";
 import { UserButton, useUser } from "@clerk/clerk-react";
 import {
   Plus,
@@ -105,7 +106,45 @@ const platformIcons = {
 
 function Dashboard() {
   const [selectedTab, setSelectedTab] = useState("recent");
-  const { user } = useUser();""
+  const { user } = useUser();
+  const [recentItems, setRecentItems] = useState([]);
+  const [stats, setStats] = useState({
+    contentCreated: 0,
+    formatsGenerated: 0,
+    hoursSaved: 0,
+  });
+  const [loadingData, setLoadingData] = useState(true);
+
+  // Load real data from database
+  useEffect(() => {
+    async function loadData() {
+      if (!user) return;
+
+      try {
+        // Get user's generations
+        const generations = await getUserGenerations(user.id);
+        setRecentItems(generations);
+
+        // Get usage stats
+        const usage = await getUserUsage(
+          user.id,
+          user.primaryEmailAddress?.emailAddress,
+        );
+
+        setStats({
+          contentCreated: usage?.total_generations || 0,
+          formatsGenerated: (usage?.total_generations || 0) * 10,
+          hoursSaved: Math.round((usage?.total_generations || 0) * 0.5),
+        });
+      } catch (err) {
+        console.error("Error loading dashboard data:", err);
+      } finally {
+        setLoadingData(false);
+      }
+    }
+
+    loadData();
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-[#1A1A1A]">
@@ -258,24 +297,31 @@ function Dashboard() {
           {[
             {
               label: "Content Created",
-              value: "0",
+              value: String(stats.contentCreated),
               icon: FileText,
-              trend: "Start today",
-              progress: 0,
+              trend:
+                stats.contentCreated > 0
+                  ? `${stats.contentCreated} pieces total`
+                  : "Start today",
+              progress: Math.min(100, (stats.contentCreated / 10) * 100),
             },
             {
               label: "Formats Generated",
-              value: "0",
+              value: String(stats.formatsGenerated),
               icon: AlbumIcon,
-              trend: "Ready to go",
-              progress: 0,
+              trend:
+                stats.formatsGenerated > 0 ? "Keep creating!" : "Ready to go",
+              progress: Math.min(100, (stats.formatsGenerated / 100) * 100),
             },
             {
               label: "Hours Saved",
-              value: "0",
+              value: String(stats.hoursSaved),
               icon: Clock,
-              trend: "Time is money",
-              progress: 0,
+              trend:
+                stats.hoursSaved > 0
+                  ? `${stats.hoursSaved}h saved!`
+                  : "Time is money",
+              progress: Math.min(100, (stats.hoursSaved / 50) * 100),
             },
           ].map((stat, i) => (
             <motion.div
@@ -406,99 +452,60 @@ function Dashboard() {
 
             {/* Content List */}
             <div className="space-y-2">
-              {recentContent.map((item, i) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 + i * 0.1 }}
-                  className="group flex items-center gap-4 p-3 rounded-xl transition-all cursor-pointer"
-                  style={{
-                    background: "rgba(245, 241, 232, 0.02)",
-                    border: "1px solid rgba(245, 241, 232, 0.05)",
-                  }}
-                  whileHover={{
-                    background: "rgba(245, 241, 232, 0.05)",
-                    x: 4,
-                  }}
-                >
-                  {/* Icon */}
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+              {recentItems.length === 0 ? (
+                <div className="py-12 text-center">
+                  <FileText className="w-12 h-12 text-[#F5F1E8]/20 mx-auto mb-3" />
+                  <p className="text-[#F5F1E8]/60 text-[14px] mb-4">
+                    No content yet
+                  </p>
+                  <Link
+                    to="/app/new"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] text-[#F5F1E8] font-medium bg-[#DC2626]"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Create First
+                  </Link>
+                </div>
+              ) : (
+                recentItems.slice(0, 5).map((item, i) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 + i * 0.1 }}
+                    className="group flex items-center gap-4 p-3 rounded-xl transition-all cursor-pointer"
                     style={{
-                      background: "rgba(245, 241, 232, 0.05)",
-                      border: "1px solid rgba(245, 241, 232, 0.08)",
+                      background: "rgba(245, 241, 232, 0.02)",
+                      border: "1px solid rgba(245, 241, 232, 0.05)",
                     }}
                   >
-                    <FileText className="w-4 h-4 text-[#F5F1E8]/60" />
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                      style={{
+                        background: "rgba(245, 241, 232, 0.05)",
+                        border: "1px solid rgba(245, 241, 232, 0.08)",
+                      }}
+                    >
+                      <FileText className="w-4 h-4 text-[#F5F1E8]/60" />
+                    </div>
+                    <div className="flex-1 min-w-0">
                       <h3 className="text-[13px] font-semibold text-[#F5F1E8] truncate">
-                        {item.title}
+                        {item.content_type || "Content"} -{" "}
+                        {item.original_content?.substring(0, 40)}...
                       </h3>
-                      {item.status === "draft" && (
-                        <span
-                          className="text-[9px] font-medium px-1.5 py-0.5 rounded"
-                          style={{
-                            background: "rgba(220, 38, 38, 0.15)",
-                            color: "#DC2626",
-                          }}
-                        >
-                          DRAFT
+                      <div className="flex items-center gap-2 text-[11px] text-[#F5F1E8]/40">
+                        <span>{item.content_type}</span>
+                        <div className="w-0.5 h-0.5 rounded-full bg-[#F5F1E8]/20" />
+                        <span>
+                          {new Date(item.created_at).toLocaleDateString()}
                         </span>
-                      )}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-[11px] text-[#F5F1E8]/40">
-                      <span>{item.type}</span>
-                      <div className="w-0.5 h-0.5 rounded-full bg-[#F5F1E8]/20" />
-                      <span>{item.date}</span>
+                    <div className="text-[11px] text-[#F5F1E8]/40 font-mono">
+                      {item.word_count} words
                     </div>
-                  </div>
-
-                  {/* Platform badges */}
-                  <div className="hidden md:flex items-center gap-1 shrink-0">
-                    {item.platforms.slice(0, 3).map((platform) => {
-                      const Icon = platformIcons[platform];
-                      return (
-                        <div
-                          key={platform}
-                          className="w-6 h-6 rounded-md flex items-center justify-center"
-                          style={{
-                            background: "rgba(245, 241, 232, 0.05)",
-                            border: "1px solid rgba(245, 241, 232, 0.08)",
-                          }}
-                          title={platform}
-                        >
-                          {Icon && (
-                            <Icon className="w-3 h-3 text-[#F5F1E8]/60" />
-                          )}
-                        </div>
-                      );
-                    })}
-                    {item.platforms.length > 3 && (
-                      <span className="text-[10px] text-[#F5F1E8]/40 ml-1">
-                        +{item.platforms.length - 3}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Actions - show on hover */}
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="p-1.5 rounded-md hover:bg-[#F5F1E8]/10 transition-all">
-                      <Eye className="w-3.5 h-3.5 text-[#F5F1E8]/60" />
-                    </button>
-                    <button className="p-1.5 rounded-md hover:bg-[#F5F1E8]/10 transition-all">
-                      <Copy className="w-3.5 h-3.5 text-[#F5F1E8]/60" />
-                    </button>
-                    <button className="p-1.5 rounded-md hover:bg-[#DC2626]/10 transition-all">
-                      <Trash2 className="w-3.5 h-3.5 text-[#F5F1E8]/60 hover:text-[#DC2626]" />
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))
+              )}
             </div>
 
             {/* View All Link */}

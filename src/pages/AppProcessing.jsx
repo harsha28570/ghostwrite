@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  saveGeneration,
+  incrementUsage,
+  canUserGenerate,
+} from "../services/supabase";
 import {
   Zap,
   Brain,
@@ -70,6 +76,7 @@ const processingSteps = [
 
 function AppProcessing() {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const [factIndex, setFactIndex] = useState(0);
@@ -102,6 +109,26 @@ function AppProcessing() {
 
         const results = await generateContent(data.content, data.brandVoice);
         localStorage.setItem("ghostwrite_results", JSON.stringify(results));
+
+        // Save to database
+        if (user) {
+          const dataString2 = localStorage.getItem("ghostwrite_generation");
+          const genData = JSON.parse(dataString2);
+
+          await saveGeneration(
+            user.id,
+            user.primaryEmailAddress?.emailAddress,
+            {
+              content: genData.content,
+              contentType: genData.contentType,
+              brandVoice: genData.brandVoice,
+              platforms: genData.platforms,
+              outputs: results,
+            },
+          );
+          await incrementUsage(user.id);
+        }
+
         clearInterval(progressInterval);
         setProgress(100);
         setCurrentStep(5);
