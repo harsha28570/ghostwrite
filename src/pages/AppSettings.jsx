@@ -1,4 +1,9 @@
-import { useState } from "react";
+import { useUser } from "@clerk/clerk-react";
+import { getUserPlan } from "../services/supabase";
+import { initiatePayment } from "../services/payment";
+import { upgradeUserPlan } from "../services/supabase";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import {
   Ghost,
@@ -35,6 +40,37 @@ const initialTemplates = [
 ];
 
 function AppSettings() {
+  const { user } = useUser();
+  const navigate = useNavigate();
+  const [currentPlan, setCurrentPlan] = useState("free");
+  const [usage, setUsage] = useState({ generations_this_month: 0 });
+
+  useEffect(() => {
+    async function loadPlan() {
+      if (!user) return;
+      const planData = await getUserPlan(user.id);
+      if (planData) {
+        setCurrentPlan(planData.plan);
+        setUsage(planData);
+      }
+    }
+    loadPlan();
+  }, [user]);
+
+  const handleUpgrade = () => {
+    initiatePayment({
+      planId: "pro",
+      user,
+      onSuccess: async (response) => {
+        await upgradeUserPlan(user.id, "pro", response.razorpay_payment_id);
+        setCurrentPlan("pro");
+        alert("🎉 Upgraded to Pro!");
+      },
+      onError: (error) => {
+        alert("Payment failed: " + error);
+      },
+    });
+  };
   const [activeTab, setActiveTab] = useState("brand");
   const [sliders, setSliders] = useState({
     tone: 65,
@@ -128,7 +164,7 @@ function AppSettings() {
                     </label>
                     <input
                       type="text"
-                      defaultValue="John Doe"
+                      defaultValue={user?.fullName || ""}
                       className="w-full px-3 py-2 rounded-lg text-[#F5F1E8] outline-none focus:border-[#DC2626]/40"
                       style={{
                         background: "rgba(245, 241, 232, 0.02)",
@@ -142,7 +178,9 @@ function AppSettings() {
                     </label>
                     <input
                       type="email"
-                      defaultValue="john@example.com"
+                      defaultValue={
+                        user?.primaryEmailAddress?.emailAddress || ""
+                      }
                       className="w-full px-3 py-2 rounded-lg text-[#F5F1E8] outline-none focus:border-[#DC2626]/40"
                       style={{
                         background: "rgba(245, 241, 232, 0.02)",
@@ -317,15 +355,29 @@ function AppSettings() {
                 <div className="rounded-xl p-6 bg-[#DC2626]">
                   <p className="text-sm text-[#F5F1E8]/80 mb-1">Current Plan</p>
                   <h2 className="text-3xl font-bold text-[#F5F1E8] mb-2">
-                    Free Forever
+                    {currentPlan === "free"
+                      ? "Free Forever"
+                      : currentPlan === "pro"
+                        ? "Pro"
+                        : "Business"}
                   </h2>
                   <p className="text-[#F5F1E8]/80 mb-4">
-                    3 content pieces per month • 5 platform formats
+                    {currentPlan === "free"
+                      ? "3 content pieces per month • 5 platform formats"
+                      : currentPlan === "pro"
+                        ? "50 content pieces per month • All 10 formats"
+                        : "Unlimited pieces • Team accounts"}
                   </p>
-                  <button className="px-4 py-2 bg-[#F5F1E8] text-[#DC2626] rounded-lg font-semibold text-sm">
-                    Upgrade to Pro
-                  </button>
+                  {currentPlan === "free" && (
+                    <button
+                      onClick={handleUpgrade}
+                      className="px-4 py-2 bg-[#F5F1E8] text-[#DC2626] rounded-lg font-semibold text-sm"
+                    >
+                      Upgrade to Pro - ₹499/mo
+                    </button>
+                  )}
                 </div>
+
                 <div
                   className="rounded-xl p-6"
                   style={{
@@ -340,18 +392,27 @@ function AppSettings() {
                     <span className="text-[#F5F1E8]/60">
                       Content pieces used
                     </span>
-                    <span className="font-semibold text-[#F5F1E8]">0 / 3</span>
+                    <span className="font-semibold text-[#F5F1E8]">
+                      {usage.generations_this_month} /{" "}
+                      {currentPlan === "free"
+                        ? "3"
+                        : currentPlan === "pro"
+                          ? "50"
+                          : "∞"}
+                    </span>
                   </div>
                   <div className="h-2 bg-[#F5F1E8]/5 rounded-full overflow-hidden mb-6">
-                    <div className="h-full w-0 bg-[#DC2626] rounded-full" />
-                  </div>
-                  <div className="flex gap-3">
-                    <button className="px-4 py-2 rounded-lg text-sm font-medium text-[#F5F1E8] bg-[#DC2626]">
-                      Upgrade Plan
-                    </button>
-                    <button className="px-4 py-2 rounded-lg text-sm font-medium text-[#F5F1E8]/60 border border-[#F5F1E8]/10 hover:bg-[#F5F1E8]/[0.03]">
-                      Payment Methods
-                    </button>
+                    <div
+                      className="h-full bg-[#DC2626] rounded-full transition-all"
+                      style={{
+                        width: `${Math.min(
+                          100,
+                          (usage.generations_this_month /
+                            (currentPlan === "free" ? 3 : 50)) *
+                            100,
+                        )}%`,
+                      }}
+                    />
                   </div>
                 </div>
               </div>

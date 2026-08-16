@@ -203,5 +203,41 @@ export const canUserGenerate = async (userId) => {
     return { allowed: true, remaining: 3 };
   }
 };
+// Upgrade user plan
+export const upgradeUserPlan = async (userId, plan, paymentId) => {
+  try {
+    const { data, error } = await supabase
+      .from("usage")
+      .update({
+        plan: plan,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("user_id", userId)
+      .select()
+      .single();
 
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error("Error upgrading plan:", error);
+    return null;
+  }
+};
+
+// Get user's current plan
+export const getUserPlan = async (userId) => {
+  try {
+    const { data, error } = await supabase
+      .from("usage")
+      .select("plan, generations_this_month, total_generations")
+      .eq("user_id", userId)
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error("Error getting plan:", error);
+    return { plan: "free", generations_this_month: 0, total_generations: 0 };
+  }
+};
 export default supabase;

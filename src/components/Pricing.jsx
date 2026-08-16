@@ -1,5 +1,8 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { useUser, useAuth } from "@clerk/clerk-react";
+import { Link, useNavigate } from "react-router-dom";
+import { initiatePayment } from "../services/payment";
+import { upgradeUserPlan } from "../services/supabase";
 import {
   Check,
   Sparkles,
@@ -79,7 +82,35 @@ const plans = [
 ];
 
 function Pricing() {
+  const { user } = useUser();
+  const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState("yearly");
+  const [upgrading, setUpgrading] = useState(false);
+
+  const handleUpgrade = (planId) => {
+    if (!isSignedIn || !user) {
+      navigate("/signup");
+      return;
+    }
+
+    setUpgrading(true);
+
+    initiatePayment({
+      planId,
+      user,
+      onSuccess: async (response) => {
+        await upgradeUserPlan(user.id, planId, response.razorpay_payment_id);
+        setUpgrading(false);
+        alert("🎉 Upgrade successful! You now have " + planId + " plan!");
+        navigate("/dashboard");
+      },
+      onError: (error) => {
+        setUpgrading(false);
+        alert("Payment failed: " + error);
+      },
+    });
+  };
 
   return (
     <section
@@ -315,9 +346,20 @@ function Pricing() {
                   </div>
 
                   {/* CTA Button */}
-                  <Link
-                    to="/signup"
-                    className={`group relative flex items-center justify-center gap-2 w-full px-6 py-3 rounded-xl font-medium text-[14px] transition-all duration-300 mb-6`}
+                  <button
+                    onClick={() => {
+                      if (plan.name === "Free") {
+                        navigate("/signup");
+                      } else if (plan.name === "Pro") {
+                        handleUpgrade("pro");
+                      } else {
+                        handleUpgrade("business");
+                      }
+                    }}
+                    disabled={upgrading}
+                    className={`group relative flex items-center justify-center gap-2 w-full px-6 py-3 rounded-xl font-medium text-[14px] transition-all duration-300 mb-6 ${
+                      upgrading ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                     style={
                       plan.featured
                         ? {
@@ -334,9 +376,11 @@ function Pricing() {
                           }
                     }
                   >
-                    {plan.cta}
-                    <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" />
-                  </Link>
+                    {upgrading ? "Processing..." : plan.cta}
+                    {!upgrading && (
+                      <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+                    )}
+                  </button>
 
                   {/* Divider */}
                   <div className="flex items-center gap-3 my-6">
