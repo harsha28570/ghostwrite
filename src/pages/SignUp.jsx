@@ -16,7 +16,11 @@ function SignUpPage() {
       </Link>
 
       {/* Clerk SignUp Component */}
-      <SignUp routing="hash" signInUrl="/login" afterSignUpUrl="/dashboard" />
+      <SignUp
+        routing="hash"
+        signInUrl="/login"
+        fallbackRedirectUrl="/dashboard"
+      />
 
       {/* Sign In Link */}
       <p className="mt-6 text-center text-[14px] text-[#F5F1E8]/60">
