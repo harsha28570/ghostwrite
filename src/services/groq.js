@@ -1,9 +1,9 @@
-import Groq from 'groq-sdk'
+import Groq from "groq-sdk";
 
 const groq = new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
   dangerouslyAllowBrowser: true,
-})
+});
 
 /**
  * Generate 10 platform-optimized formats from one content
@@ -11,13 +11,18 @@ const groq = new Groq({
  * @param {string} brandVoice - Brand voice description
  * @returns {Promise<Object>} - Object with 10 platform versions
  */
-export const generateContent = async (userContent, brandVoice = 'professional') => {
+export const generateContent = async (
+  userContent,
+  brandVoice = "professional",
+) => {
   if (!userContent || userContent.trim().length === 0) {
-    throw new Error('Please provide some content to repurpose')
+    throw new Error("Please provide some content to repurpose");
   }
 
   if (!import.meta.env.VITE_GROQ_API_KEY) {
-    throw new Error('Missing API key. Add VITE_GROQ_API_KEY to your .env file.')
+    throw new Error(
+      "Missing API key. Add VITE_GROQ_API_KEY to your .env file.",
+    );
   }
 
   const prompt = `You are an expert content creator who specializes in repurposing content for different social media platforms.
@@ -88,51 +93,83 @@ Generate this exact JSON structure with REAL content (not placeholders):
 
 Generate creative, platform-specific content based on the original content. Make each version unique to the platform's audience and best practices. Use ACTUAL content, not placeholder text.
 
-Return ONLY the JSON object with actual generated content. No explanations.`
+Return ONLY the JSON object with actual generated content. No explanations.`;
 
   try {
-    const response = await groq.chat.completions.create({
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a content creation expert. You MUST return only valid JSON without any markdown formatting or extra text. Generate real content, not placeholders.',
-        },
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-      model: 'llama-3.3-70b-versatile',
-      temperature: 0.8,
-      max_tokens: 4000,
-      response_format: { type: 'json_object' },
-    })
+    const modelCandidates = [
+      import.meta.env.VITE_GROQ_MODEL,
+      "openai/gpt-oss-120b",
+      "llama-3.3-70b-versatile",
+      "llama-3.1-8b-instant",
+    ].filter(Boolean);
 
-    const responseText = response.choices[0].message.content
+    let lastError = null;
 
-    const cleanedResponse = responseText
-      .replace(/```json/g, '')
-      .replace(/```/g, '')
-      .trim()
+    for (const modelName of modelCandidates) {
+      try {
+        const response = await groq.chat.completions.create({
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a content creation expert. You MUST return only valid JSON without any markdown formatting or extra text. Generate real content, not placeholders.",
+            },
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          model: modelName,
+          temperature: 0.8,
+          max_tokens: 4000,
+          response_format: { type: "json_object" },
+        });
 
-    return JSON.parse(cleanedResponse)
-  } catch (error) {
-    console.error('Groq API Error:', error)
+        const responseText = response.choices[0].message.content;
 
-    if (error.message?.includes('API key') || error.status === 401) {
-      throw new Error('Invalid API key. Please check your .env file.')
+        const cleanedResponse = responseText
+          .replace(/```json/g, "")
+          .replace(/```/g, "")
+          .trim();
+
+        return JSON.parse(cleanedResponse);
+      } catch (error) {
+        lastError = error;
+        const message = error?.message || "";
+        const isModelAvailabilityError =
+          /model_not_found|model_decommissioned|does not exist|not found/i.test(
+            message,
+          );
+        if (!isModelAvailabilityError) {
+          throw error;
+        }
+      }
     }
 
-    if (error.message?.includes('rate limit') || error.status === 429) {
-      throw new Error('Rate limit exceeded. Please wait a minute and try again.')
+    throw (
+      lastError || new Error("No Groq model was available for this account.")
+    );
+  } catch (error) {
+    console.error("Groq API Error:", error);
+
+    if (error.message?.includes("API key") || error.status === 401) {
+      throw new Error("Invalid API key. Please check your .env file.");
+    }
+
+    if (error.message?.includes("rate limit") || error.status === 429) {
+      throw new Error(
+        "Rate limit exceeded. Please wait a minute and try again.",
+      );
     }
 
     if (error instanceof SyntaxError) {
-      throw new Error('AI response was invalid. Please try again with different content.')
+      throw new Error(
+        "AI response was invalid. Please try again with different content.",
+      );
     }
 
-    throw new Error('Failed to generate content. Please try again.')
+    throw new Error("Failed to generate content. Please try again.");
   }
-}
+};
 
-export default { generateContent }
+export default { generateContent };

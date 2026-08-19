@@ -56,26 +56,53 @@ BRAND VOICE: ${brandVoice}
 
 Return ONLY valid JSON with these keys: twitter, linkedin, instagram, email, facebook, tiktok, youtube, pinterest, reddit, blog. Each with title, icon, and content.`;
 
-      const response = await groq.chat.completions.create({
-        messages: [
-          { role: "system", content: "Return only valid JSON." },
-          { role: "user", content: prompt },
-        ],
-        model: "llama-3.3-70b-versatile",
-        temperature: 0.8,
-        max_tokens: 4000,
-        response_format: { type: "json_object" },
-      });
+      const modelCandidates = [
+        import.meta.env.VITE_GROQ_MODEL,
+        "openai/gpt-oss-120b",
+        "llama-3.3-70b-versatile",
+        "llama-3.1-8b-instant",
+      ].filter(Boolean);
 
-      const responseText = response.choices[0].message.content;
-      const cleanedResponse = responseText
-        .replace(/```json/g, "")
-        .replace(/```/g, "")
-        .trim();
-      const parsedResponse = JSON.parse(cleanedResponse);
+      let lastError = null;
 
-      console.log("✅ Dev API Response received");
-      return parsedResponse;
+      for (const modelName of modelCandidates) {
+        try {
+          const response = await groq.chat.completions.create({
+            messages: [
+              { role: "system", content: "Return only valid JSON." },
+              { role: "user", content: prompt },
+            ],
+            model: modelName,
+            temperature: 0.8,
+            max_tokens: 4000,
+            response_format: { type: "json_object" },
+          });
+
+          const responseText = response.choices[0].message.content;
+          const cleanedResponse = responseText
+            .replace(/```json/g, "")
+            .replace(/```/g, "")
+            .trim();
+          const parsedResponse = JSON.parse(cleanedResponse);
+
+          console.log("✅ Dev API Response received");
+          return parsedResponse;
+        } catch (error) {
+          lastError = error;
+          const message = error?.message || "";
+          const isModelAvailabilityError =
+            /model_not_found|model_decommissioned|does not exist|not found/i.test(
+              message,
+            );
+          if (!isModelAvailabilityError) {
+            throw error;
+          }
+        }
+      }
+
+      throw (
+        lastError || new Error("No Groq model was available for this account.")
+      );
     }
   } catch (error) {
     console.error("API Error:", error);

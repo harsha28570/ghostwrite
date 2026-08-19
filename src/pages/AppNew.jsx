@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useUser } from "@clerk/clerk-react";
+import { canUserGenerate } from "../services/supabase";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -59,6 +61,22 @@ const platforms = [
 
 function AppNew() {
   const navigate = useNavigate();
+  const { user } = useUser();
+  const [limitReached, setLimitReached] = useState(false);
+  const [usageInfo, setUsageInfo] = useState(null);
+
+  // Check limits when page loads
+  useEffect(() => {
+    async function checkLimits() {
+      if (!user) return;
+      const result = await canUserGenerate(user.id);
+      setUsageInfo(result);
+      if (!result.allowed) {
+        setLimitReached(true);
+      }
+    }
+    checkLimits();
+  }, [user]);
   const [activeTab, setActiveTab] = useState("paste");
   const [text, setText] = useState("");
   const [contentType, setContentType] = useState("Blog Post");
@@ -94,7 +112,18 @@ function AppNew() {
   const selectAll = () => setSelectedPlatforms(platforms.map((p) => p.name));
   const deselectAll = () => setSelectedPlatforms([]);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
+    // Check limits before generating
+    if (user) {
+      const limitCheck = await canUserGenerate(user.id);
+      if (!limitCheck.allowed) {
+        setLimitReached(true);
+        setUsageInfo(limitCheck);
+        alert("Monthly limit reached! Please upgrade to Pro.");
+        return;
+      }
+    }
+
     const tone =
       sliders.tone < 33
         ? "casual"
@@ -747,10 +776,50 @@ function AppNew() {
                 />
               </div>
 
+              {/* Usage Limit Warning */}
+              {limitReached && (
+                <div
+                  className="mb-4 p-4 rounded-xl"
+                  style={{
+                    background: "rgba(220, 38, 38, 0.1)",
+                    border: "1px solid rgba(220, 38, 38, 0.3)",
+                  }}
+                >
+                  <p className="text-[14px] font-semibold text-[#DC2626] mb-1">
+                    Monthly limit reached!
+                  </p>
+                  <p className="text-[12px] text-[#F5F1E8]/60 mb-3">
+                    You've used all {usageInfo?.limit} free generations this
+                    month.
+                  </p>
+                  <Link
+                    to="/pricing"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium text-[#F5F1E8] bg-[#DC2626]"
+                  >
+                    Upgrade to Pro - ₹499/mo
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              )}
+
+              {/* Usage Counter */}
+              {usageInfo && !limitReached && (
+                <div className="mb-4 flex items-center justify-between text-[11px] text-[#F5F1E8]/40">
+                  <span>
+                    {usageInfo.used}/{usageInfo.limit} generations used this
+                    month
+                  </span>
+                  <span>{usageInfo.remaining} remaining</span>
+                </div>
+              )}
               {/* Generate Button - Crimson */}
               <button
                 onClick={handleGenerate}
-                disabled={wordCount < 10 || selectedPlatforms.length === 0}
+                disabled={
+                  wordCount < 10 ||
+                  selectedPlatforms.length === 0 ||
+                  limitReached
+                }
                 className="group relative w-full py-4 rounded-xl text-[#F5F1E8] font-bold text-[15px] transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 style={{
                   background:
