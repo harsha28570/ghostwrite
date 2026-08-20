@@ -146,6 +146,46 @@ function Dashboard() {
     loadData();
   }, [user]);
 
+  useEffect(() => {
+    async function sendWelcomeEmailIfNeeded() {
+      if (!user) return;
+
+      const creationTime = new Date(user.createdAt).getTime();
+      const now = new Date().getTime();
+      const ageInMinutes = (now - creationTime) / (1000 * 60);
+      const hasWelcomed = localStorage.getItem(`welcomed_${user.id}`);
+
+      if (ageInMinutes < 2 && !hasWelcomed) {
+        try {
+          const emailBody = `
+            <h2>Welcome to GhostWrite, ${user.firstName || "Creator"}! 👻</h2>
+            <p>We're thrilled to have you here. You just unlocked the fastest way to repurpose your content.</p>
+            <p>Head over to your dashboard and generate your first 10 formats.</p>
+            <br/>
+            <p>Happy creating,</p>
+            <p>Ricky @ GhostWrite</p>
+          `;
+
+          await fetch("/api/send-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              to: user.primaryEmailAddress?.emailAddress,
+              subject: "Welcome to GhostWrite! ✨",
+              html: emailBody,
+            }),
+          });
+
+          localStorage.setItem(`welcomed_${user.id}`, "true");
+        } catch (error) {
+          console.error("Failed to send welcome email:", error);
+        }
+      }
+    }
+
+    sendWelcomeEmailIfNeeded();
+  }, [user]);
+
   return (
     <div className="min-h-screen bg-[#1A1A1A]">
       {/* Header */}
