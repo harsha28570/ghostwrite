@@ -1,3 +1,5 @@
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import LandingPage from "./pages/LandingPage";
@@ -88,6 +90,8 @@ function App() {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <Analytics />
+      <SpeedInsights />
     </Router>
   );
 }
