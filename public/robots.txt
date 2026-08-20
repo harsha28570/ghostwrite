@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /dashboard
+
+Sitemap: https://ghostwrite.vercel.app/sitemap.xml
