@@ -31,7 +31,6 @@ function Hero() {
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 text-center">
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-10 rounded-full border border-[#F5F1E8]/10 bg-[#F5F1E8]/[0.03]">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626]" />
           <span className="text-[13px] text-[#F5F1E8]/70 font-medium tracking-tight">
             AI-powered content repurposing
           </span>

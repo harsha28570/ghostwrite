@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { scrollToSection } from "../utils/navigation";
+import Logo from "./Logo";
 
 const productLinks = [
   { name: "Features", href: "#features", type: "section" },
@@ -342,45 +343,7 @@ function Footer() {
         >
           {/* Logo & Description */}
           <div>
-            <Link
-              to="/"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "10px",
-                marginBottom: "16px",
-                textDecoration: "none",
-              }}
-            >
-              <div
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "8px",
-                  background:
-                    "linear-gradient(135deg, #DC2626 0%, #B91C1C 50%, #7F1D1D 100%)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  boxShadow: "0 0 20px rgba(220, 38, 38, 0.4)",
-                }}
-              >
-                <Ghost
-                  style={{ width: "16px", height: "16px", color: "#F5F1E8" }}
-                  strokeWidth={2.5}
-                />
-              </div>
-              <span
-                style={{
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  color: "#F5F1E8",
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                GhostWrite
-              </span>
-            </Link>
+            <Logo />
 
             <p
               style={{
@@ -623,15 +586,6 @@ function Footer() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <div
-                style={{
-                  width: "6px",
-                  height: "6px",
-                  borderRadius: "50%",
-                  background: "#DC2626",
-                  animation: "pulse 2s infinite",
-                }}
-              />
               <span style={{ color: "rgba(245, 241, 232, 0.5)" }}>
                 All systems operational
               </span>

@@ -24,6 +24,7 @@ import {
   MessageSquare,
   ArrowLeft,
   Wand2,
+  Target,
   Zap,
   Type,
   Users,
@@ -31,6 +32,7 @@ import {
   Settings,
   Save,
 } from "lucide-react";
+import Logo from "../components/Logo";
 
 const inputTabs = [
   { id: "paste", label: "Paste Text", icon: Clipboard },
@@ -189,17 +191,7 @@ function AppNew() {
               <ArrowLeft className="w-4 h-4" />
             </Link>
 
-            <Link
-              to="/"
-              className="group flex items-center gap-2.5 transition-all duration-300"
-            >
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#DC2626] via-[#B91C1C] to-[#7F1D1D] flex items-center justify-center shadow-[0_0_20px_rgba(220,38,38,0.3)] group-hover:shadow-[0_0_30px_rgba(220,38,38,0.5)] transition-all duration-500 group-hover:scale-105">
-                <Ghost className="w-5 h-5 text-[#F5F1E8]" strokeWidth={2.5} />
-              </div>
-              <span className="text-[16px] font-semibold text-[#F5F1E8] tracking-tight">
-                GhostWrite
-              </span>
-            </Link>
+            <Logo />
           </div>
 
           <div className="flex items-center gap-3">
@@ -511,7 +503,7 @@ function AppNew() {
                       border: "1px solid rgba(245, 241, 232, 0.08)",
                     }}
                   >
-                    <Sparkles className="w-4 h-4 text-[#F5F1E8]/70" />
+                    <Type className="w-4 h-4 text-[#F5F1E8]/70" />
                   </div>
                   <div>
                     <h2
@@ -843,7 +835,7 @@ function AppNew() {
                 }}
               >
                 <div className="relative flex items-center justify-center gap-2">
-                  <Wand2 className="w-5 h-5" />
+                  <Target className="w-5 h-5" />
                   Generate {selectedPlatforms.length} Formats
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </div>
@@ -896,7 +888,7 @@ function AppNew() {
               </button>
 
               <div className="w-16 h-16 rounded-2xl bg-[#DC2626]/10 border border-[#DC2626]/30 flex items-center justify-center mx-auto mb-6">
-                <Sparkles className="w-8 h-8 text-[#DC2626]" />
+                <Type className="w-8 h-8 text-[#DC2626]" />
               </div>
 
               <h2

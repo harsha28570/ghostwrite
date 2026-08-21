@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { scrollToSection } from "../utils/navigation";
+import Logo from "./Logo";
 
 const navLinks = [
   { name: "Features", href: "#features", type: "section" },
@@ -75,22 +76,7 @@ function Navbar() {
           >
             <div className="relative flex items-center justify-between px-5 sm:px-6 h-14">
               {/* Logo */}
-              <Link
-                to="/"
-                className="group flex items-center gap-2.5 transition-all duration-300"
-              >
-                <div className="relative">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#DC2626] via-[#B91C1C] to-[#7F1D1D] flex items-center justify-center shadow-[0_0_15px_rgba(220,38,38,0.3)] group-hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] transition-all duration-500 group-hover:scale-105">
-                    <Ghost
-                      className="w-4 h-4 text-[#F5F1E8]"
-                      strokeWidth={2.5}
-                    />
-                  </div>
-                </div>
-                <span className="text-[15px] font-semibold text-[#F5F1E8] tracking-tight">
-                  GhostWrite
-                </span>
-              </Link>
+              <Logo />
 
               {/* Desktop Nav Links */}
               <div className="hidden lg:flex items-center gap-1 mx-4">

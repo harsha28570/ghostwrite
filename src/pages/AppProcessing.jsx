@@ -28,6 +28,7 @@ import {
   FileText,
   Wand2,
 } from "lucide-react";
+import Logo from "../components/Logo";
 import { generateContent } from "../services/gemini";
 
 const allPlatforms = [
@@ -161,14 +162,7 @@ function AppProcessing() {
           }}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center">
-            <Link to="/" className="group flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#DC2626] to-[#B91C1C] flex items-center justify-center">
-                <Ghost className="w-5 h-5 text-[#F5F1E8]" strokeWidth={2.5} />
-              </div>
-              <span className="text-[16px] font-semibold text-[#F5F1E8]">
-                GhostWrite
-              </span>
-            </Link>
+            <Logo />
           </div>
         </header>
         <main className="flex-1 flex items-center justify-center p-6">
@@ -214,14 +208,7 @@ function AppProcessing() {
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="group flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#DC2626] to-[#B91C1C] flex items-center justify-center">
-              <Ghost className="w-5 h-5 text-[#F5F1E8]" strokeWidth={2.5} />
-            </div>
-            <span className="text-[16px] font-semibold text-[#F5F1E8]">
-              GhostWrite
-            </span>
-          </Link>
+          <Logo />
           <Link
             to="/app/new"
             className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#F5F1E8]/60 hover:text-[#F5F1E8] rounded-lg"

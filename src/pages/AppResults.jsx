@@ -22,6 +22,7 @@ import {
   ChevronRight,
   Sparkles,
 } from "lucide-react";
+import Logo from "../components/Logo";
 
 const platformsConfig = [
   { id: "twitter", name: "Twitter Thread", icon: Twitter, format: "Thread" },
@@ -150,14 +151,7 @@ function AppResults() {
           }}
         >
           <div className="max-w-7xl mx-auto px-6 h-14 flex items-center">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[#DC2626] to-[#B91C1C] flex items-center justify-center">
-                <Ghost className="w-4 h-4 text-[#F5F1E8]" strokeWidth={2.5} />
-              </div>
-              <span className="text-[14px] font-semibold text-[#F5F1E8]">
-                GhostWrite
-              </span>
-            </Link>
+            <Logo />
           </div>
         </header>
         <main className="flex-1 flex items-center justify-center p-6">
@@ -201,14 +195,7 @@ function AppResults() {
       >
         <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[#DC2626] to-[#B91C1C] flex items-center justify-center">
-                <Ghost className="w-4 h-4 text-[#F5F1E8]" strokeWidth={2.5} />
-              </div>
-              <span className="text-[14px] font-semibold text-[#F5F1E8]">
-                GhostWrite
-              </span>
-            </Link>
+            <Logo />
             <div className="hidden md:flex items-center gap-2 text-[12px]">
               <Link
                 to="/dashboard"
@@ -284,12 +271,10 @@ function AppResults() {
                     key={p.id}
                     onClick={() => {
                       setActivePlatform(p.id);
-                      document
-                        .getElementById(p.id)
-                        ?.scrollIntoView({
-                          behavior: "smooth",
-                          block: "start",
-                        });
+                      document.getElementById(p.id)?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
                     }}
                     className={`group w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[13px] transition-colors ${activePlatform === p.id ? "bg-[#F5F1E8]/[0.06] text-[#F5F1E8]" : "text-[#F5F1E8]/50 hover:bg-[#F5F1E8]/[0.03] hover:text-[#F5F1E8]/80"}`}
                   >

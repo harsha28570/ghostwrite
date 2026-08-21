@@ -1,3 +1,4 @@
+import LegalPages from "./pages/LegalPages";
 import AdminPanel from "./pages/AdminPanel";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
@@ -38,6 +39,10 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/blog" element={<BlogPage />} />
+        <Route path="/privacy" element={<LegalPages />} />
+        <Route path="/terms" element={<LegalPages />} />
+        <Route path="/refund" element={<LegalPages />} />
+        <Route path="/refund-policy" element={<LegalPages />} />
 
         {/* Protected Routes - Need Login */}
         <Route

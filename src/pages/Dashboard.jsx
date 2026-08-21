@@ -38,6 +38,7 @@ import {
   BookText,
   AlbumIcon,
 } from "lucide-react";
+import Logo from "../components/Logo";
 
 // Sample recent activity data
 const recentContent = [
@@ -197,19 +198,7 @@ function Dashboard() {
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link
-            to="/"
-            className="group flex items-center gap-2.5 transition-all duration-300"
-          >
-            <div className="relative">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#DC2626] via-[#B91C1C] to-[#7F1D1D] flex items-center justify-center shadow-[0_0_20px_rgba(220,38,38,0.3)] group-hover:shadow-[0_0_30px_rgba(220,38,38,0.5)] transition-all duration-500 group-hover:scale-105">
-                <Ghost className="w-5 h-5 text-[#F5F1E8]" strokeWidth={2.5} />
-              </div>
-            </div>
-            <span className="text-[16px] font-semibold text-[#F5F1E8] tracking-tight">
-              GhostWrite
-            </span>
-          </Link>
+          <Logo />
 
           <div className="hidden md:flex flex-1 max-w-md mx-8">
             <div className="relative w-full">
