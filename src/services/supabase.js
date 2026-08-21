@@ -240,4 +240,58 @@ export const getUserPlan = async (userId) => {
     return { plan: "free", generations_this_month: 0, total_generations: 0 };
   }
 };
+
+// ============ ADMIN PANEL FUNCTIONS ============
+
+// 1. Get all users usage data for Admin
+export const getAllUsersUsageAdmin = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("usage")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching admin users:", error);
+    return [];
+  }
+};
+
+// 2. Get all generations across all users for Admin
+export const getAllGenerationsAdmin = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("generations")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(100);
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching admin generations:", error);
+    return [];
+  }
+};
+
+// 3. Admin manually updates any user's plan
+export const updateUserPlanAdmin = async (userId, newPlan) => {
+  try {
+    const { data, error } = await supabase
+      .from("usage")
+      .update({ plan: newPlan, updated_at: new Date().toISOString() })
+      .eq("user_id", userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error("Error updating user plan:", error);
+    return null;
+  }
+};
+
 export default supabase;

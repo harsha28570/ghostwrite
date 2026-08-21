@@ -1,3 +1,4 @@
+import AdminPanel from "./pages/AdminPanel";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -84,6 +85,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AppSettings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminPanel />
             </ProtectedRoute>
           }
         />
