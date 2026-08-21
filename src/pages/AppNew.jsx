@@ -119,7 +119,6 @@ function AppNew() {
       if (!limitCheck.allowed) {
         setLimitReached(true);
         setUsageInfo(limitCheck);
-        alert("Monthly limit reached! Please upgrade to Pro.");
         return;
       }
     }
@@ -746,15 +745,26 @@ function AppNew() {
                 <select
                   value={perspective}
                   onChange={(e) => setPerspective(e.target.value)}
-                  className="w-full px-3 py-2 text-[12px] text-[#F5F1E8] rounded-lg outline-none cursor-pointer"
-                  style={{
-                    background: "rgba(245, 241, 232, 0.02)",
-                    border: "1px solid rgba(245, 241, 232, 0.08)",
-                  }}
+                  className="w-full px-3 py-2 text-[12px] text-[#F5F1E8] bg-[#1A1A1A] border border-[#F5F1E8]/10 rounded-lg outline-none cursor-pointer focus:border-[#DC2626]"
                 >
-                  <option>First Person (I/We)</option>
-                  <option>Second Person (You)</option>
-                  <option>Third Person (They)</option>
+                  <option
+                    value="First Person (I/We)"
+                    className="bg-[#242424] text-[#F5F1E8] py-2"
+                  >
+                    First Person (I/We)
+                  </option>
+                  <option
+                    value="Second Person (You)"
+                    className="bg-[#242424] text-[#F5F1E8] py-2"
+                  >
+                    Second Person (You)
+                  </option>
+                  <option
+                    value="Third Person (They)"
+                    className="bg-[#242424] text-[#F5F1E8] py-2"
+                  >
+                    Third Person (They)
+                  </option>
                 </select>
               </div>
 
@@ -862,6 +872,69 @@ function AppNew() {
           </div>
         </div>
       </main>
+
+      {/* Upgrade Modal Popup */}
+      <AnimatePresence>
+        {limitReached && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="max-w-md w-full rounded-3xl p-8 bg-[#242424] border border-[#DC2626]/30 text-center relative overflow-hidden shadow-2xl"
+            >
+              <button
+                onClick={() => setLimitReached(false)}
+                className="absolute top-4 right-4 p-2 text-white/40 hover:text-white rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="w-16 h-16 rounded-2xl bg-[#DC2626]/10 border border-[#DC2626]/30 flex items-center justify-center mx-auto mb-6">
+                <Sparkles className="w-8 h-8 text-[#DC2626]" />
+              </div>
+
+              <h2
+                className="text-2xl font-bold text-[#F5F1E8] mb-2"
+                style={{ letterSpacing: "-0.03em" }}
+              >
+                Monthly Limit Reached
+              </h2>
+
+              <p className="text-[#F5F1E8]/60 text-sm mb-6 leading-relaxed">
+                You've used all{" "}
+                <span className="text-[#F5F1E8] font-semibold">
+                  {usageInfo?.limit || 3} free generations
+                </span>{" "}
+                for this month. Upgrade to Pro for 50 generations/month and all
+                10 formats.
+              </p>
+
+              <div className="space-y-3">
+                <Link
+                  to="/pricing"
+                  className="flex items-center justify-center gap-2 w-full py-3.5 bg-[#DC2626] hover:bg-[#B91C1C] text-[#F5F1E8] rounded-xl font-medium text-sm transition-all shadow-lg shadow-red-600/30"
+                >
+                  Upgrade to Pro — ₹499/mo
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+
+                <button
+                  onClick={() => setLimitReached(false)}
+                  className="w-full py-2.5 text-xs text-[#F5F1E8]/40 hover:text-[#F5F1E8]/80 transition"
+                >
+                  Maybe later
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <style>{`
         input[type="range"]::-webkit-slider-thumb {
