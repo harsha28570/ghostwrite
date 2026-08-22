@@ -15,6 +15,16 @@ function LoginPage() {
         fallbackRedirectUrl="/dashboard"
       />
 
+      {/* Forgot Password Link (mailto support) */}
+      <p className="mt-4 text-center">
+        <a
+          href="mailto:support@ghostwrite.app?subject=Password%20Reset%20Request"
+          className="text-[12px] text-[#DC2626] hover:text-[#EF4444] transition-colors font-medium"
+        >
+          Forgot password?
+        </a>
+      </p>
+
       {/* Sign Up Link */}
       <p className="mt-6 text-center text-[14px] text-[#F5F1E8]/60">
         Don't have an account?{" "}

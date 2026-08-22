@@ -10,6 +10,7 @@ import LoginPage from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Pricing from "./pages/Pricing";
 import BlogPage from "./pages/BlogPage";
+import Contact from "./pages/Contact";
 import AppPage from "./pages/AppPage";
 import AppNew from "./pages/AppNew";
 import AppProcessing from "./pages/AppProcessing";
@@ -43,6 +44,14 @@ function App() {
         <Route path="/terms" element={<LegalPages />} />
         <Route path="/refund" element={<LegalPages />} />
         <Route path="/refund-policy" element={<LegalPages />} />
+        <Route path="/about" element={<LandingPage />} />
+        <Route path="/support" element={<Contact />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/docs" element={<Contact />} />
+        <Route path="/api" element={<Contact />} />
+        <Route path="/cookies" element={<LegalPages />} />
+        <Route path="/gdpr" element={<LegalPages />} />
+        <Route path="/careers" element={<Contact />} />
 
         {/* Protected Routes - Need Login */}
         <Route
